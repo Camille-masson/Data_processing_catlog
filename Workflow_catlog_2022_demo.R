@@ -117,7 +117,7 @@ if (F) {
     meancrits = c(500, 500, 350)
     spikesps = c(1500, 1500, 1500)
     spikecoss = c(-0.95, -0.95, -0.95)
-
+l
     for (i in 1:length(medcrits)) {
         trajectories <- position_filter(data, medcrit=medcrits[i], meancrit=meancrits[i], spikesp=spikesps[i], spikecos=spikecoss[i])
 
