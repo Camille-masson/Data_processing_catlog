@@ -79,7 +79,7 @@ if (F) {
     source("Functions/Functions_map_plot.R")
     # ENTREES
     # Un dossier contenant les trajectoires brutes, au format csv issu des colliers catlog, rangées dans des sous-dossiers au nom de leurs alpages
-    raw_data_dir = paste0("/home/moamo/These/4 - STrouMPH/Donnees_GPS/Colliers_",YEAR,"_brutes/")
+    raw_data_dir = paste0("C:/Users/masso/Documents/These/4 - STrouMPH/Donnees_GPS/Colliers_",YEAR,"_brutes/")
     # Un data.frame contenant les dates de pose et de retrait des colliers, Doit contenir les colonnes  "alpage", "date_pose" et "date_retrait"
     AIF <- paste0(data_dir,YEAR,"_infos_alpages.csv")
     # L’alpage devant être traité
