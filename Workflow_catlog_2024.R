@@ -77,13 +77,16 @@ if (F) {
 if (F) {
     source("Functions/Functions_filtering.R")
     source("Functions/Functions_map_plot.R")
-    # ENTREES
+    library(dplyr)
+    in# ENTREES
     # Un dossier contenant les trajectoires brutes, au format csv issu des colliers catlog, rangées dans des sous-dossiers au nom de leurs alpages
     raw_data_dir = paste0("C:/Users/masso/Documents/These/4 - STrouMPH/Donnees_GPS/Colliers_",YEAR,"_brutes/")
     # Un data.frame contenant les dates de pose et de retrait des colliers, Doit contenir les colonnes  "alpage", "date_pose" et "date_retrait"
     AIF <- paste0(data_dir,YEAR,"_infos_alpages.csv")
+    
+    AIF_data <- read.csv(AIF, sep=",", header=TRUE, encoding="UTF-8")
     # L’alpage devant être traité
-    alpage = "Cayolle"
+    alpage = "Viso"
 
     pdf("Filtering_calibration.pdf", width = 9, height = 9)
 
@@ -92,9 +95,15 @@ if (F) {
     data = do.call(rbind, lapply(files, function(file) { data = load_catlog_data(file)
                                                          data$ID = file
                                                          return(data) }))
-    beg_date = as.POSIXct(get_alpage_info(alpage, AIF, "date_pose"), tz="GMT", format="%d/%m/%Y %H:%M:%S")
-    end_date = as.POSIXct(get_alpage_info(alpage, AIF, "date_retrait"), tz="GMT", format="%d/%m/%Y %H:%M:%S")
+    beg_date = as.POSIXct(get_alpage_info(alpage, AIF, "date_pose"), tz="GMT", format="%d/%m/%Y %H:%M")
+    end_date = as.POSIXct(get_alpage_info(alpage, AIF, "date_retrait"), tz="GMT", format="%d/%m/%Y %H:%M")
+    
+    
+    
     data = date_filter(data, beg_date, end_date)
+    
+    
+    CRS_L93 <- "EPSG:2154"
 
     data_xy = data %>%
                 terra::vect(crs="EPSG:4326") %>%

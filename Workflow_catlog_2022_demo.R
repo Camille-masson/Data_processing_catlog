@@ -15,17 +15,18 @@ source("Functions/Functions_utility.R")
 # Constants
 source("Functions/Constants.R")
 ncores = 3 # Number of CPU cores to be used for parallelised analyses. Adapt to the number of cores and amount of RAM available if the script crashes
-YEAR = 2023
+YEAR = 2022
 ALPAGES_TOTAL = list(   "2022" = c("Ane-et-Buyant", "Cayolle", "Combe-Madame", "Grande-Fesse", "Jas-des-Lievres", "Lanchatra", "Pelvas", "Sanguiniere", "Viso"),
                         "2023" = c("Cayolle", "Crouzet", "Grande-Cabane", "Lanchatra", "Rouanette", "Sanguiniere", "Vacherie-de-Roubion", "Viso") )
 ALPAGES = ALPAGES_TOTAL[[as.character(YEAR)]]
 
 # Set pathes
-data_dir <- "/home/moamo/These/4 - STrouMPH/Donnees_GPS/"
-output_dir <- paste0("/home/moamo/These/4 - STrouMPH/STrouMPH_R/Figures_Catlog_",YEAR,"/")
-raster_dir <- "/home/moamo/These/QGIS/Donnees_sources/"
-UP_file <- "/home/moamo/These/QGIS/Donnees_sources/UP_ZP_Michel/v1_bd_shape_up_inra_2012_2014_2154_all_emprise.shp"
+data_dir <- "C:/Users/masso/Documents/These/4 - STrouMPH/Donnees_GPS/"
+output_dir <- paste0("C:/Users/masso/Documents/These/4 - STrouMPH/STrouMPH_R/Figures_Catlog_",YEAR,"/")
+raster_dir <- "C:/Users/masso/Documents/These/QGIS/Donnees_sources/"
+UP_file <- "C:/Users/masso/Documents/These/QGIS/Donnees_sources/UP_ZP_Michel/v1_bd_shape_up_inra_2012_2014_2154_all_emprise.shp"
 AIF <- paste0(data_dir,YEAR,"_infos_alpages.csv") # Chemin du fichier contenant les colonnes  "alpage", "nom_alpages_determinant", "proportion_jour_allume", "UP_nom1", "chemin_carte_vegetation","chemin_carte_phenologie", "medcrit", "meancrit", "spikesp", "spikecos"
+
 
 
 ### 1. GPS TRAJECTORIES FILTERING ###
@@ -45,9 +46,9 @@ if (F) {
     source("Functions/Functions_filtering.R")
     # ENTREES
     # Un dossier contenant les trajectoires brutes, au format csv issu des colliers catlog, rangées dans des sous-dossiers au nom de leurs alpages
-    raw_data_dir = paste0("/home/moamo/These/4 - STrouMPH/Donnees_GPS/Colliers_",YEAR,"_brutes/")
+    raw_data_dir = paste0("C:/Users/masso/Documents/These/4 - STrouMPH/Donnees_GPS/Colliers_",YEAR,"_brutes/")
     # Les alpages à traiter
-    alpages = c("Rouanette", "Crouzet")
+    alpages = c("Viso")
     # SORTIES
     # Un .gpkg contenant les trajectoires rééchantillonnées
     output_file = paste0(data_dir,"Donnees_brutes_",YEAR,"_simplifiees.gpkg")
@@ -78,11 +79,11 @@ if (F) {
     source("Functions/Functions_map_plot.R")
     # ENTREES
     # Un dossier contenant les trajectoires brutes, au format csv issu des colliers catlog, rangées dans des sous-dossiers au nom de leurs alpages
-    raw_data_dir = paste0("/home/moamo/These/4 - STrouMPH/Donnees_GPS/Colliers_",YEAR,"_brutes/")
+    raw_data_dir = paste0("C:/Users/masso/Documents/These/4 - STrouMPH/Donnees_GPS/Colliers_",YEAR,"_brutes/")
     # Un data.frame contenant les dates de pose et de retrait des colliers, Doit contenir les colonnes  "alpage", "date_pose" et "date_retrait"
     AIF <- paste0(data_dir,YEAR,"_infos_alpages.csv")
     # L’alpage devant être traité
-    alpage = "Cayolle"
+    alpage = "Viso"
 
     pdf("Filtering_calibration.pdf", width = 9, height = 9)
 
@@ -152,11 +153,11 @@ if (F) {
     source("Functions/Functions_filtering.R")
     # ENTREES
     # Un dossier contenant les trajectoires brutes, au format csv issu des colliers catlog, rangées dans des sous-dossiers au nom de leurs alpages. Coordonnées en WSG84. Le nom des fichiers, sous la forme "ID_quelquechose.csv", sera utilisé pour déterminer l’ID du collier qui doit comporter 3 caractères.
-    raw_data_dir = paste0("/home/moamo/These/4 - STrouMPH/Donnees_GPS/Colliers_",YEAR,"_brutes/")
+    raw_data_dir = paste0("C:/Users/masso/Documents/These/4 - STrouMPH/Donnees_GPS/Colliers_",YEAR,"_brutes/")
     # Un fichier contenant les informations sur chaque individu équipé, les dates de pose et de retrait des colliers, ainsi que la proportion de temps pour laquelle les colliers sont programmés pour être allumés (18h par jour = 0.75). Doit contenir les colonnes "Collier", "Alpage", "Espece", "Race", "date_pose", "date_retrait" et "proportion_jour_allume"
     IIF = paste0(raw_data_dir,YEAR,"_colliers_poses.csv")
     # Les alpages à traiter
-    alpages = c("Grande-Cabane")
+    alpages = c("Viso")
     # SORTIES
     # Un .RDS contenant les trajectoires filtrées (les nouvelles trajectoires sont ajoutées à la suite des trajectoires traitées précédemment). Coordonnées en Lambert93.
     output_rds_file = paste0(data_dir,"Catlog_",YEAR,"_filtered.rds")
