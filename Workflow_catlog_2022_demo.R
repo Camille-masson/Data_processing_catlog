@@ -81,9 +81,24 @@ if (F) {
     # Un dossier contenant les trajectoires brutes, au format csv issu des colliers catlog, rangées dans des sous-dossiers au nom de leurs alpages
     raw_data_dir = paste0("C:/Users/masso/Documents/These/4 - STrouMPH/Donnees_GPS/Colliers_",YEAR,"_brutes/")
     # Un data.frame contenant les dates de pose et de retrait des colliers, Doit contenir les colonnes  "alpage", "date_pose" et "date_retrait"
+    
+    
+    # Lire le fichier avec point-virgule
+    AIF_data <- read.csv(AIF, sep = ";", header = TRUE, encoding = "UTF-8")
+    
+    # Sauvegarder avec un séparateur virgule
+    write.csv(AIF_data, AIF, row.names = FALSE)
+    
+    
     AIF <- paste0(data_dir,YEAR,"_infos_alpages.csv")
+    
+    AIF_data <- read.csv(AIF, sep = ",", header = TRUE, row.names = NULL, check.names = FALSE, encoding = "UTF-8")
+    head(AIF_data)
+    
+    
     # L’alpage devant être traité
     alpage = "Viso"
+    
 
     pdf("Filtering_calibration.pdf", width = 9, height = 9)
 
@@ -92,8 +107,8 @@ if (F) {
     data = do.call(rbind, lapply(files, function(file) { data = load_catlog_data(file)
                                                          data$ID = file
                                                          return(data) }))
-    beg_date = as.POSIXct(get_alpage_info(alpage, AIF, "date_pose"), tz="GMT", format="%d/%m/%Y %H:%M:%S")
-    end_date = as.POSIXct(get_alpage_info(alpage, AIF, "date_retrait"), tz="GMT", format="%d/%m/%Y %H:%M:%S")
+    beg_date = as.POSIXct(get_alpage_info(alpage, AIF, "date_pose"), tz="GMT", format="%d/%m/%Y %H:%M")
+    end_date = as.POSIXct(get_alpage_info(alpage, AIF, "date_retrait"), tz="GMT", format="%d/%m/%Y %H:%M")
     data = date_filter(data, beg_date, end_date)
 
     data_xy = data %>%
@@ -117,7 +132,7 @@ if (F) {
     meancrits = c(500, 500, 350)
     spikesps = c(1500, 1500, 1500)
     spikecoss = c(-0.95, -0.95, -0.95)
-l
+
     for (i in 1:length(medcrits)) {
         trajectories <- position_filter(data, medcrit=medcrits[i], meancrit=meancrits[i], spikesp=spikesps[i], spikecos=spikecoss[i])
 
@@ -162,7 +177,7 @@ if (F) {
     # Un .RDS contenant les trajectoires filtrées (les nouvelles trajectoires sont ajoutées à la suite des trajectoires traitées précédemment). Coordonnées en Lambert93.
     output_rds_file = paste0(data_dir,"Catlog_",YEAR,"_filtered.rds")
     # Un .csv contenant les performances des colliers (pourcentages de points éliminés à chaque étape, colliers défectueux...)
-    indicator_file = paste0("/home/moamo/These/4 - STrouMPH/Donnees_GPS/catlog_",YEAR,"_filtering.csv")
+    indicator_file = paste0("C:/Users/masso/Documents/These/4 - STrouMPH/Donnees_GPS/catlog_",YEAR,"_filtering.csv")
 
     
     for (alpage in alpages) {
@@ -195,7 +210,7 @@ if (F) {
 }
 
 
-### 3. HMM FITTING ###
+### 3. HMM FITTING ### (en cours)
 #--------------------#
 if (F) {
     library(snow)
@@ -204,6 +219,7 @@ if (F) {
     library(momentuHMM)
     # library(foieGras)
     library(adehabitatLT)
+  
     library(adehabitatHR)
     # Libraries RMarkdown
     library(knitr)
@@ -222,6 +238,7 @@ if (F) {
     # Un .RDS contenant les trajectoires catégorisées par comportement (les nouvelles trajectoires sont ajoutées à la suite des trajectoires traitées précédemment)
     output_rds_file = paste0(data_dir,"Catlog_",YEAR,"_viterbi.rds")
 
+    
     ### LOADING DATA FOR ANALYSES
     data = readRDS(input_rds_file)
     data = data[data$species == "brebis",]
@@ -256,7 +273,7 @@ if (F) {
     results = par_HMM_fit(data, run_parameters, ncores = ncores, individual_info_file, sampling_period = 120, output_dir)
     endTime = Sys.time()
 
-    ### SUMMARIZE MODEL FITTING BY ALPAGE in rmarkdown PDFs
+    ### SUMMARIZE MODEL FITTING BY ALPAGE in rmarkdown PDFs (A revoir)
     parameters_df <- parameters_to_data.frame(run_parameters)
 
     individual_IDs <- sapply(results, function(hmm) hmm$data$ID[1])
@@ -273,6 +290,9 @@ if (F) {
     data_hmm <- do.call("rbind", lapply(results, function(result) result$data))
     viterbi_trajectory_to_rds(data_hmm, output_rds_file, individual_info_file)
 }
+
+
+
 
 
 ### 4.1. FLOCK STOCKING RATE (charge) BY DAY AND BY STATE ###
@@ -316,6 +336,7 @@ if (F) {
         data <- data[data$alpage == alpage,]
 
         pheno_t0 <- get_raster_cropped_L93(get_alpage_info(alpage, AIF, "chemin_carte_phenologie"), get_minmax_L93(data, 100), reproject = T, band = 2, as = "SpatialPixelDataFrame") # The flock load will be computed on the same grid
+        
         flock_load_by_day_and_state_to_rds_kernelbb(data, pheno_t0, save_dir, paste0(state_daily_rds_prefix,alpage,".rds"), flock_sizes, prop_time_collar_on) #Creates the save_rds file
         rm(data)
 
