@@ -1,6 +1,9 @@
 ### 0. LIBRARIES AND CONSTANTS ###
 #--------------------------------#
 
+#Modification pour voir le bon fonctionnement du git
+
+
 # For the pipes
 library(tidyverse) # includes ggplot2 dplyr among others
 library(lubridate)
