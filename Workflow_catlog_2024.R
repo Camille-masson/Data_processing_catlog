@@ -15,7 +15,7 @@ source("Functions/Functions_utility.R")
 # Constants
 source("Functions/Constants.R")
 ncores = 3 # Number of CPU cores to be used for parallelised analyses. Adapt to the number of cores and amount of RAM available if the script crashes
-YEAR = 2024
+YEAR = 2022
 ALPAGES_TOTAL = list(   "2022" = c("Ane-et-Buyant", "Cayolle", "Combe-Madame", "Grande-Fesse", "Jas-des-Lievres", "Lanchatra", "Pelvas", "Sanguiniere", "Viso"),
                         "2023" = c("Cayolle", "Crouzet", "Grande-Cabane", "Lanchatra", "Rouanette", "Sanguiniere", "Vacherie-de-Roubion", "Viso"),
                         "2024" = c("Viso"))
@@ -77,14 +77,11 @@ if (F) {
 if (F) {
     source("Functions/Functions_filtering.R")
     source("Functions/Functions_map_plot.R")
-    library(dplyr)
-    in# ENTREES
+    # ENTREES
     # Un dossier contenant les trajectoires brutes, au format csv issu des colliers catlog, rangées dans des sous-dossiers au nom de leurs alpages
     raw_data_dir = paste0("C:/Users/masso/Documents/These/4 - STrouMPH/Donnees_GPS/Colliers_",YEAR,"_brutes/")
     # Un data.frame contenant les dates de pose et de retrait des colliers, Doit contenir les colonnes  "alpage", "date_pose" et "date_retrait"
     AIF <- paste0(data_dir,YEAR,"_infos_alpages.csv")
-    
-    AIF_data <- read.csv(AIF, sep=",", header=TRUE, encoding="UTF-8")
     # L’alpage devant être traité
     alpage = "Viso"
 
@@ -95,15 +92,17 @@ if (F) {
     data = do.call(rbind, lapply(files, function(file) { data = load_catlog_data(file)
                                                          data$ID = file
                                                          return(data) }))
-    beg_date = as.POSIXct(get_alpage_info(alpage, AIF, "date_pose"), tz="GMT", format="%d/%m/%Y %H:%M")
-    end_date = as.POSIXct(get_alpage_info(alpage, AIF, "date_retrait"), tz="GMT", format="%d/%m/%Y %H:%M")
     
+    
+    
+    beg_date = as.POSIXct(get_alpage_info(alpage, AIF, "date_pose"), tz="GMT", format="%d/%m/%Y %H:%M:%S")
+    end_date = as.POSIXct(get_alpage_info(alpage, AIF, "date_retrait"), tz="GMT", format="%d/%m/%Y %H:%M:%S")
+    
+    print(beg_date) # Vérifiez que beg_date est une date valide
+    print(end_date) # Vérifiez que end_date est une date valide
     
     
     data = date_filter(data, beg_date, end_date)
-    
-    
-    CRS_L93 <- "EPSG:2154"
 
     data_xy = data %>%
                 terra::vect(crs="EPSG:4326") %>%

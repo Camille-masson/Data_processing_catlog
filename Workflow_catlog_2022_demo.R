@@ -14,10 +14,11 @@ source("Functions/Functions_ggplot_custom.R")
 source("Functions/Functions_utility.R")
 # Constants
 source("Functions/Constants.R")
-ncores = 3 # Number of CPU cores to be used for parallelised analyses. Adapt to the number of cores and amount of RAM available if the script crashes
-YEAR = 2022
+ncores = 8 # Number of CPU cores to be used for parallelised analyses. Adapt to the number of cores and amount of RAM available if the script crashes
+YEAR = 2024
 ALPAGES_TOTAL = list(   "2022" = c("Ane-et-Buyant", "Cayolle", "Combe-Madame", "Grande-Fesse", "Jas-des-Lievres", "Lanchatra", "Pelvas", "Sanguiniere", "Viso"),
-                        "2023" = c("Cayolle", "Crouzet", "Grande-Cabane", "Lanchatra", "Rouanette", "Sanguiniere", "Vacherie-de-Roubion", "Viso") )
+                        "2023" = c("Cayolle", "Crouzet", "Grande-Cabane", "Lanchatra", "Rouanette", "Sanguiniere", "Vacherie-de-Roubion", "Viso"),
+                        "2024" = c("Viso"))
 ALPAGES = ALPAGES_TOTAL[[as.character(YEAR)]]
 
 # Set pathes
@@ -83,18 +84,9 @@ if (F) {
     # Un data.frame contenant les dates de pose et de retrait des colliers, Doit contenir les colonnes  "alpage", "date_pose" et "date_retrait"
     
     
-    # Lire le fichier avec point-virgule
-    AIF_data <- read.csv(AIF, sep = ";", header = TRUE, encoding = "UTF-8")
-    
-    # Sauvegarder avec un séparateur virgule
-    write.csv(AIF_data, AIF, row.names = FALSE)
-    
-    
     AIF <- paste0(data_dir,YEAR,"_infos_alpages.csv")
     
     AIF_data <- read.csv(AIF, sep = ",", header = TRUE, row.names = NULL, check.names = FALSE, encoding = "UTF-8")
-    head(AIF_data)
-    
     
     # L’alpage devant être traité
     alpage = "Viso"
@@ -107,6 +99,16 @@ if (F) {
     data = do.call(rbind, lapply(files, function(file) { data = load_catlog_data(file)
                                                          data$ID = file
                                                          return(data) }))
+    ##TEST##
+    beg_date <- paste0(get_alpage_info(alpage, AIF, "date_pose"), ":00")
+    end_date <- paste0(get_alpage_info(alpage, AIF, "date_retrait"), ":00")
+    beg_date <- as.POSIXct(beg_date, tz="GMT", format="%d/%m/%Y %H:%M:%S")
+    end_date <- as.POSIXct(end_date, tz="GMT", format="%d/%m/%Y %H:%M:%S")
+    ##
+    
+    
+    
+    
     beg_date = as.POSIXct(get_alpage_info(alpage, AIF, "date_pose"), tz="GMT", format="%d/%m/%Y %H:%M")
     end_date = as.POSIXct(get_alpage_info(alpage, AIF, "date_retrait"), tz="GMT", format="%d/%m/%Y %H:%M")
     data = date_filter(data, beg_date, end_date)
@@ -383,6 +385,8 @@ if (F) {
 }
 
 
+
+
 ### 4.2. IF NEEDED: READAPT FLOCK STOCKING RATE TO NEW FLOCK SIZES ###
 #--------------------------------------------------------------------#
 if (F) {
@@ -500,7 +504,7 @@ if (F) {
     daily_rds_prefix = paste0(data_dir,"Chargements_calcules/by_day_",YEAR,"_")
     # Les alpages à traiter
     alpages = ALPAGES
-    alpages = c("Grande-Cabane", "Lanchatra", "Rouanette", "Sanguiniere", "Vacherie-de-Roubion", "Viso")
+    alpages = c("Viso")
 
     # SORTIES
     # monthly videos of trajectories and loads in output_dir/alpage_name
